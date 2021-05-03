@@ -13,6 +13,16 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        Button startButton = (Button) findViewById(R.id.startButton);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(startButton.getVisibility() == View.VISIBLE)
+                startButton.setVisibility(View.GONE);
+
+            }
+        });
     }
 
 }

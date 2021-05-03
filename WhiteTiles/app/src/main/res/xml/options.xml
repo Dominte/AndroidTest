@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <EditTextPreference
-        android:key="my_value_2"
-        android:defaultValue="123"
-        android:title="Some value ..."/>
-
+    <PreferenceCategory android:title="Number of tiles">
+        <ListPreference
+            android:key="list_tiles"
+            android:title="Press to select the number of tiles"
+            android:dialogTitle= "Select number of tiles"
+            android:entries="@array/tiles_list"
+            android:defaultValue="3"
+            android:entryValues="@array/tiles_list_results"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Starting speed">
+        <ListPreference
+            android:key="list_speed"
+            android:title="Press to select the starting speed"
+            android:dialogTitle= "Select your preferred speed"
+            android:entries="@array/speed_list"
+            android:defaultValue="0"
+            android:entryValues="@array/speed_list_results"/>
+    </PreferenceCategory>
 </PreferenceScreen>
