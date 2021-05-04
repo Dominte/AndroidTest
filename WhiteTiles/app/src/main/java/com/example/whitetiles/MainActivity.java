@@ -25,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void openHighscoreActivity(){
+        Intent intent = new Intent(this, HighscoresActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 openPlayActivity();
+            }
+        });
+
+        Button highscoresButton = (Button) findViewById(R.id.highscoresButton);
+        highscoresButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openHighscoreActivity();
             }
         });
     }
