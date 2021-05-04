@@ -26,7 +26,7 @@ public class PlayActivity extends AppCompatActivity {
     private int height;
     private int width;
     public ArrayList<ImageView> tileList;
-    private int interval = 2000;
+    private int interval = 1999;
     private Handler mHandler;
     private Handler tHandler;
     RelativeLayout layout;
@@ -39,7 +39,13 @@ public class PlayActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("my_prefs",MODE_PRIVATE);
         numberOfTiles = Integer.parseInt(sharedPreferences.getString("list_tiles","3"));
+        System.out.println("Number of tiles " + numberOfTiles);
         startingSpeed = Integer.parseInt(sharedPreferences.getString("list_speed","0"));
+
+        if (startingSpeed == 0)
+            startingSpeed = 10;
+        else
+            startingSpeed =15;
 
         //https://stackoverflow.com/questions/4743116/get-screen-width-and-height-in-android
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -77,7 +83,19 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
     }
-    public ImageView AddTile(int row,RelativeLayout layout,int color){
+    public void AddTile(int row,RelativeLayout layout,int color){
+
+        for(int i = 0 ; i<tileList.size();i++){
+            float tileX = tileList.get(i).getX();
+            float tileY = tileList.get(i).getY();
+
+            if((int)tileX == (int)width/numberOfTiles*row){
+                if(tileY < 0)
+                    return;
+            }
+
+        }
+
         ImageView imageView = new ImageView(this);
         if(color==0){
             imageView.setBackgroundColor(Color.BLACK);}
@@ -85,12 +103,11 @@ public class PlayActivity extends AppCompatActivity {
             imageView.setBackgroundColor(Color.YELLOW);
         }
         imageView.setLayoutParams(new LinearLayout.LayoutParams(width/numberOfTiles,height/4));
-        imageView.setX((width/numberOfTiles)*(row-1));
-        imageView.setY(0);
+        imageView.setX((int)(width/numberOfTiles)*(row));
+        imageView.setY((int)(-height/4));
         layout.addView(imageView);
 
-
-        return imageView;
+        tileList.add(imageView);
     }
 
 
@@ -100,6 +117,7 @@ public class PlayActivity extends AppCompatActivity {
         super.onDestroy();
         stopRepeatingTask();
         stopTileDropTask();
+        tileList.clear();
     }
 
     Runnable mStatusChecker = new Runnable() {
@@ -107,19 +125,17 @@ public class PlayActivity extends AppCompatActivity {
         public void run() {
             mHandler.postDelayed(mStatusChecker, interval);
             Random rn = new Random();
-            tileList.add(AddTile(rn.nextInt(numberOfTiles+1),layout,rn.nextInt(2)));
-
-           
+            AddTile(rn.nextInt(numberOfTiles),layout,rn.nextInt(2));
         }
     };
 
     Runnable DropTile = new Runnable() {
         @Override
         public void run() {
-            tHandler.postDelayed(DropTile,100);
+            tHandler.postDelayed(DropTile,51);
             for(int i = 0 ; i<tileList.size();i++){
                 ImageView imageView = tileList.get(i);
-                imageView.setY(tileList.get(i).getY()+20);
+                imageView.setY(tileList.get(i).getY()+10);
 
             }
         }
@@ -141,4 +157,11 @@ public class PlayActivity extends AppCompatActivity {
         tHandler.removeCallbacks(DropTile);
     }
 
+    void startTimer(){
+
+    }
+
+    void stopTimer(){
+
+    }
 }
