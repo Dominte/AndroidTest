@@ -47,8 +47,12 @@ public class PlayActivity extends AppCompatActivity {
                 }
 
                 // Start game
+
+
             }
         });
     }
-
+    public void DrawTile(){
+        
+    }
 }
