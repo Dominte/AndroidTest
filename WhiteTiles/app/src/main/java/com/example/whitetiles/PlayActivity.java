@@ -6,14 +6,18 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -22,19 +26,29 @@ public class PlayActivity extends AppCompatActivity {
 
     private int numberOfTiles; // 3 / 4 / 5
     private int startingSpeed; // 0 slow / 1 fast
+    private int currentSpeed;
     private ImageView[] imageViews;
     private int height;
     private int width;
     public ArrayList<ImageView> tileList;
-    private int interval = 1999;
+    private int interval = 1000;
     private Handler mHandler;
     private Handler tHandler;
+    private Handler timerHandler;
+    private TextView timerView;
+    private int contor=0;
+    private int intervalContor=0;
+    private TextView scoreView;
+    private int secondsPassed=0;
+    private int currentScore=0;
     RelativeLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        timerView = (TextView) findViewById(R.id.time);
+        scoreView = (TextView) findViewById(R.id.score);
         Button startButton = (Button) findViewById(R.id.startButton);
 
         SharedPreferences sharedPreferences = getSharedPreferences("my_prefs",MODE_PRIVATE);
@@ -45,7 +59,9 @@ public class PlayActivity extends AppCompatActivity {
         if (startingSpeed == 0)
             startingSpeed = 10;
         else
-            startingSpeed =15;
+            startingSpeed =20;
+
+        currentSpeed = startingSpeed;
 
         //https://stackoverflow.com/questions/4743116/get-screen-width-and-height-in-android
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -78,8 +94,10 @@ public class PlayActivity extends AppCompatActivity {
 
                 mHandler = new Handler();
                 tHandler = new Handler();
+                timerHandler = new Handler();
                 startRepeatingTask();
                 startTileDropTask();
+                startTimer();
             }
         });
     }
@@ -105,6 +123,32 @@ public class PlayActivity extends AppCompatActivity {
         imageView.setLayoutParams(new LinearLayout.LayoutParams(width/numberOfTiles,height/4));
         imageView.setX((int)(width/numberOfTiles)*(row));
         imageView.setY((int)(-height/4));
+        if(color==0){
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                imageView.setVisibility(View.GONE);
+                tileList.remove(imageView);
+                layout.removeView(imageView);
+                currentScore++;
+                scoreView.setText("Score: "+ currentScore);
+                imageView.setOnTouchListener(null);
+                return true;
+            }
+        });
+        }
+        else{
+            imageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                    //Finish game
+
+                    return true;
+                }
+            });
+        }
+
         layout.addView(imageView);
 
         tileList.add(imageView);
@@ -117,12 +161,27 @@ public class PlayActivity extends AppCompatActivity {
         super.onDestroy();
         stopRepeatingTask();
         stopTileDropTask();
+        stopTimer();
         tileList.clear();
     }
+
+    Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            timerHandler.postDelayed(timer,1000);
+            secondsPassed++;
+            timerView.setText("Time: "+secondsPassed);
+        }
+    };
 
     Runnable mStatusChecker = new Runnable() {
         @Override
         public void run() {
+
+            if(secondsPassed % 10 == 0 && interval > 500 && intervalContor <= secondsPassed / 10) {
+                intervalContor++;
+                interval = interval-100;
+            }
             mHandler.postDelayed(mStatusChecker, interval);
             Random rn = new Random();
             AddTile(rn.nextInt(numberOfTiles),layout,rn.nextInt(2));
@@ -132,10 +191,14 @@ public class PlayActivity extends AppCompatActivity {
     Runnable DropTile = new Runnable() {
         @Override
         public void run() {
-            tHandler.postDelayed(DropTile,51);
+            tHandler.postDelayed(DropTile,50);
+            if(secondsPassed % 10 == 0 && contor <= secondsPassed / 10){
+                contor++;
+                currentSpeed=currentSpeed+5;
+            }
             for(int i = 0 ; i<tileList.size();i++){
                 ImageView imageView = tileList.get(i);
-                imageView.setY(tileList.get(i).getY()+10);
+                imageView.setY(tileList.get(i).getY()+currentSpeed);
 
             }
         }
@@ -158,10 +221,10 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     void startTimer(){
-
+        timer.run();
     }
 
     void stopTimer(){
-
+        timerHandler.removeCallbacks(timer);
     }
 }

@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:elevation="100dp"
         android:text="Score: "
         android:textStyle="bold"
         android:layout_height="wrap_content"/>
