@@ -1,7 +1,11 @@
 package com.example.whitetiles;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.w3c.dom.Text;
@@ -34,16 +39,18 @@ public class PlayActivity extends AppCompatActivity {
     private int interval = 1000;
     private Handler mHandler;
     private Handler tHandler;
+    private int black = -16777216;
     private Handler timerHandler;
     private TextView timerView;
-    private int contor=0;
-    private int intervalContor=0;
+    private int contor = 0;
+    private int intervalContor = 0;
     private TextView scoreView;
-    private int secondsPassed=0;
-    private int currentScore=0;
+    private int secondsPassed = 0;
+    private int currentScore = 0;
     RelativeLayout layout;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
@@ -51,15 +58,15 @@ public class PlayActivity extends AppCompatActivity {
         scoreView = (TextView) findViewById(R.id.score);
         Button startButton = (Button) findViewById(R.id.startButton);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("my_prefs",MODE_PRIVATE);
-        numberOfTiles = Integer.parseInt(sharedPreferences.getString("list_tiles","3"));
+        SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
+        numberOfTiles = Integer.parseInt(sharedPreferences.getString("list_tiles", "3"));
         System.out.println("Number of tiles " + numberOfTiles);
-        startingSpeed = Integer.parseInt(sharedPreferences.getString("list_speed","0"));
+        startingSpeed = Integer.parseInt(sharedPreferences.getString("list_speed", "0"));
 
         if (startingSpeed == 0)
             startingSpeed = 10;
         else
-            startingSpeed =20;
+            startingSpeed = 20;
 
         currentSpeed = startingSpeed;
 
@@ -70,7 +77,7 @@ public class PlayActivity extends AppCompatActivity {
         width = displayMetrics.widthPixels;
 
         System.out.println("Height: " + height);
-        System.out.println("Width: "+ width);
+        System.out.println("Width: " + width);
         layout = findViewById(R.id.relativeLayout);
 
         /*   ImageView imageView = new ImageView(this);
@@ -84,10 +91,10 @@ public class PlayActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(startButton.getVisibility() == View.VISIBLE) {
+                if (startButton.getVisibility() == View.VISIBLE) {
                     startButton.setVisibility(View.GONE);
                 }
-                tileList  = new ArrayList<ImageView>();
+                tileList = new ArrayList<ImageView>();
 
                 // Start game
 
@@ -101,49 +108,58 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
     }
-    public void AddTile(int row,RelativeLayout layout,int color){
 
-        for(int i = 0 ; i<tileList.size();i++){
+    public void AddTile(int row, RelativeLayout layout, int color) {
+
+        for (int i = 0; i < tileList.size(); i++) {
             float tileX = tileList.get(i).getX();
             float tileY = tileList.get(i).getY();
 
-            if((int)tileX == (int)width/numberOfTiles*row){
-                if(tileY < 0)
+            if ((int) tileX == (int) width / numberOfTiles * row) {
+                if (tileY < 0)
                     return;
             }
 
         }
 
         ImageView imageView = new ImageView(this);
-        if(color==0){
-            imageView.setBackgroundColor(Color.BLACK);}
-        else{
+        if (color == 0) {
+            imageView.setBackgroundColor(Color.BLACK);
+        } else {
             imageView.setBackgroundColor(Color.YELLOW);
         }
-        imageView.setLayoutParams(new LinearLayout.LayoutParams(width/numberOfTiles,height/4));
-        imageView.setX((int)(width/numberOfTiles)*(row));
-        imageView.setY((int)(-height/4));
-        if(color==0){
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                imageView.setVisibility(View.GONE);
-                tileList.remove(imageView);
-                layout.removeView(imageView);
-                currentScore++;
-                scoreView.setText("Score: "+ currentScore);
-                imageView.setOnTouchListener(null);
-                return true;
-            }
-        });
-        }
-        else{
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(width / numberOfTiles, height / 4));
+        imageView.setX((int) (width / numberOfTiles) * (row));
+        imageView.setY((int) (-height / 4));
+        if (color == 0) {
+            imageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    imageView.setVisibility(View.GONE);
+                    tileList.remove(imageView);
+                    layout.removeView(imageView);
+                    currentScore++;
+                    scoreView.setText("Score: " + currentScore);
+                    imageView.setOnTouchListener(null);
+                    return true;
+                }
+            });
+        } else {
             imageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                    //Finish game
-
+                    // Stop threads
+                    stopRepeatingTask();
+                    stopTileDropTask();
+                    stopTimer();
+                    for (int i = 0; i < tileList.size(); i++) {
+                        tileList.get(i).setVisibility(View.GONE);
+                        layout.removeView(tileList.get(i));
+                    }
+                    tileList.clear();
+                    showGameOver();
+                    imageView.setOnTouchListener(null);
                     return true;
                 }
             });
@@ -168,9 +184,9 @@ public class PlayActivity extends AppCompatActivity {
     Runnable timer = new Runnable() {
         @Override
         public void run() {
-            timerHandler.postDelayed(timer,1000);
+            timerHandler.postDelayed(timer, 1000);
             secondsPassed++;
-            timerView.setText("Time: "+secondsPassed);
+            timerView.setText("Time: " + secondsPassed);
         }
     };
 
@@ -178,27 +194,46 @@ public class PlayActivity extends AppCompatActivity {
         @Override
         public void run() {
 
-            if(secondsPassed % 10 == 0 && interval > 500 && intervalContor <= secondsPassed / 10) {
+            if (secondsPassed % 10 == 0 && interval > 500 && intervalContor <= secondsPassed / 10) {
                 intervalContor++;
-                interval = interval-100;
+                interval = interval - 100;
             }
             mHandler.postDelayed(mStatusChecker, interval);
             Random rn = new Random();
-            AddTile(rn.nextInt(numberOfTiles),layout,rn.nextInt(2));
+            AddTile(rn.nextInt(numberOfTiles), layout, rn.nextInt(2));
         }
     };
 
     Runnable DropTile = new Runnable() {
         @Override
         public void run() {
-            tHandler.postDelayed(DropTile,50);
-            if(secondsPassed % 10 == 0 && contor <= secondsPassed / 10){
+            tHandler.postDelayed(DropTile, 50);
+
+            if (secondsPassed % 10 == 0 && contor <= secondsPassed / 10) {
                 contor++;
-                currentSpeed=currentSpeed+5;
+                currentSpeed = currentSpeed + 5;
             }
-            for(int i = 0 ; i<tileList.size();i++){
+            for (int i = 0; i < tileList.size(); i++) {
                 ImageView imageView = tileList.get(i);
-                imageView.setY(tileList.get(i).getY()+currentSpeed);
+
+                Drawable bgDrawable = imageView.getBackground();
+                if (bgDrawable instanceof ColorDrawable) {
+                    int color = ((ColorDrawable) bgDrawable).getColor();
+                    if (color == black && imageView.getY() > height) {
+                        stopRepeatingTask();
+                        stopTileDropTask();
+                        stopTimer();
+                        for (int j = 0; j < tileList.size(); j++) {
+                            tileList.get(i).setVisibility(View.GONE);
+                            layout.removeView(tileList.get(j));
+                        }
+                        tileList.clear();
+                        showGameOver();
+                    } else {
+                        imageView.setY(tileList.get(i).getY() + currentSpeed);
+                    }
+                }
+
 
             }
         }
@@ -212,19 +247,46 @@ public class PlayActivity extends AppCompatActivity {
         mHandler.removeCallbacks(mStatusChecker);
     }
 
-    void startTileDropTask(){
+    void startTileDropTask() {
         DropTile.run();
     }
 
-    void stopTileDropTask(){
+    void stopTileDropTask() {
         tHandler.removeCallbacks(DropTile);
     }
 
-    void startTimer(){
+    void startTimer() {
         timer.run();
     }
 
-    void stopTimer(){
+    void stopTimer() {
         timerHandler.removeCallbacks(timer);
+    }
+
+    void showGameOver() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Game Over!");
+        builder.setMessage("Your score is: " + currentScore);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                goBackToMainMenu();
+            }
+        });
+
+        builder.setNeutralButton("Share", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                return;
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    void goBackToMainMenu() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
