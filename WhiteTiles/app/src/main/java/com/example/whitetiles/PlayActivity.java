@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -48,11 +49,16 @@ public class PlayActivity extends AppCompatActivity {
     private int secondsPassed = 0;
     private int currentScore = 0;
     RelativeLayout layout;
+    MediaPlayer goodMP;
+    MediaPlayer badMP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        goodMP = MediaPlayer.create(this, R.raw.zapsplat_cartoon_pop_high_pitched_002_64602);
+        badMP = MediaPlayer.create(this, R.raw.zapsplat_cartoon_impact_thud_wobble_26699);
 
         timerView = (TextView) findViewById(R.id.time);
         scoreView = (TextView) findViewById(R.id.score);
@@ -135,6 +141,7 @@ public class PlayActivity extends AppCompatActivity {
             imageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
+                    goodMP.start();
                     imageView.setVisibility(View.GONE);
                     tileList.remove(imageView);
                     layout.removeView(imageView);
@@ -148,6 +155,7 @@ public class PlayActivity extends AppCompatActivity {
             imageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
+                    badMP.start();
 
                     // Stop threads
                     stopRepeatingTask();
