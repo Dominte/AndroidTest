@@ -1,5 +1,6 @@
 package com.example.whitetiles;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,6 +52,7 @@ public class PlayActivity extends AppCompatActivity {
     RelativeLayout layout;
     MediaPlayer goodMP;
     MediaPlayer badMP;
+    Button startButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +64,10 @@ public class PlayActivity extends AppCompatActivity {
 
         timerView = (TextView) findViewById(R.id.time);
         scoreView = (TextView) findViewById(R.id.score);
-        Button startButton = (Button) findViewById(R.id.startButton);
+        startButton = (Button) findViewById(R.id.startButton);
 
         SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
         numberOfTiles = Integer.parseInt(sharedPreferences.getString("list_tiles", "3"));
-        System.out.println("Number of tiles " + numberOfTiles);
         startingSpeed = Integer.parseInt(sharedPreferences.getString("list_speed", "0"));
 
         if (startingSpeed == 0)
@@ -132,7 +133,7 @@ public class PlayActivity extends AppCompatActivity {
         if (color == 0) {
             imageView.setBackgroundColor(Color.BLACK);
         } else {
-            imageView.setBackgroundColor(Color.YELLOW);
+            imageView.setBackgroundColor(Color.WHITE);
         }
         imageView.setLayoutParams(new LinearLayout.LayoutParams(width / numberOfTiles, height / 4));
         imageView.setX((int) (width / numberOfTiles) * (row));
@@ -183,10 +184,12 @@ public class PlayActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopRepeatingTask();
-        stopTileDropTask();
-        stopTimer();
-        tileList.clear();
+        if (startButton.getVisibility() == View.GONE) {
+            stopRepeatingTask();
+            stopTileDropTask();
+            stopTimer();
+            tileList.clear();
+        }
     }
 
     Runnable timer = new Runnable() {
@@ -275,6 +278,7 @@ public class PlayActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Game Over!");
         builder.setMessage("Your score is: " + currentScore);
+        saveHighscore(currentScore);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -296,5 +300,32 @@ public class PlayActivity extends AppCompatActivity {
     void goBackToMainMenu() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    void saveHighscore(int score) {
+        SharedPreferences sharedpreferences = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        if (score > Integer.parseInt(sharedpreferences.getString("First", "0"))) {
+            editor.putString("First", String.valueOf(score));
+            saveHighscore(Integer.parseInt(sharedpreferences.getString("First", "0")));
+            editor.commit();
+        } else if (score > Integer.parseInt(sharedpreferences.getString("Second", "0"))) {
+            editor.putString("Second", String.valueOf(score));
+            saveHighscore(Integer.parseInt(sharedpreferences.getString("Second", "0")));
+            editor.commit();
+        } else if (score > Integer.parseInt(sharedpreferences.getString("Third", "0"))) {
+            editor.putString("Third", String.valueOf(score));
+            saveHighscore(Integer.parseInt(sharedpreferences.getString("Third", "0")));
+            editor.commit();
+        } else if (score > Integer.parseInt(sharedpreferences.getString("Fourth", "0"))) {
+            editor.putString("Fourth", String.valueOf(score));
+            saveHighscore(Integer.parseInt(sharedpreferences.getString("Fourth", "0")));
+            editor.commit();
+        } else if (score > Integer.parseInt(sharedpreferences.getString("Fifth", "0"))) {
+            editor.putString("Fifth", String.valueOf(score));
+            saveHighscore(Integer.parseInt(sharedpreferences.getString("Fifth", "0")));
+            editor.commit();
+        }
     }
 }
