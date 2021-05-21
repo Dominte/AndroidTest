@@ -286,6 +286,7 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
+
         builder.setNeutralButton("Share", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -299,6 +300,7 @@ public class PlayActivity extends AppCompatActivity {
 
     void goBackToMainMenu() {
         Intent intent = new Intent(this, MainActivity.class);
+
         startActivity(intent);
     }
 
