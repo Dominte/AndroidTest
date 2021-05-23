@@ -1,14 +1,25 @@
 package com.example.whitetiles;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.CallbackManager;
+import com.facebook.share.model.ShareHashtag;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
+
 public class HighscoresActivity extends AppCompatActivity {
+
+    ShareButton shareButton;
+    CallbackManager callbackManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,8 +41,30 @@ public class HighscoresActivity extends AppCompatActivity {
 
         firstView.setText("1. " + firstScore + " points");
         secondView.setText("2. " + secondScore + " points");
-        thirdView.setText("3. " +thirdScore + " points");
-        fourthView.setText("4. "+ fourthScore+ " points");
-        fifthView.setText("5. "+ fifthScore + " points ");
+        thirdView.setText("3. " + thirdScore + " points");
+        fourthView.setText("4. " + fourthScore + " points");
+        fifthView.setText("5. " + fifthScore + " points ");
+
+        shareButton = findViewById(R.id.shareButton);
+
+        callbackManager = CallbackManager.Factory.create();
+    
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                .setQuote("Test Quote")
+                .setContentUrl(Uri.parse("www.google.ro"))
+                .setShareHashtag(new ShareHashtag.Builder()
+                        .setHashtag("#WhiteTiles")
+                        .build())
+                .build();
+
+        shareButton.setShareContent(shareLinkContent);
+
     }
 }
