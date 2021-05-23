@@ -18,9 +18,6 @@ import com.facebook.share.widget.ShareButton;
 
 public class HighscoresActivity extends AppCompatActivity {
 
-    ShareButton shareButton;
-    CallbackManager callbackManager;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,26 +42,7 @@ public class HighscoresActivity extends AppCompatActivity {
         fourthView.setText("4. " + fourthScore + " points");
         fifthView.setText("5. " + fifthScore + " points ");
 
-        shareButton = findViewById(R.id.shareButton);
-
-        callbackManager = CallbackManager.Factory.create();
-    
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-
-        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
-                .setQuote("Test Quote")
-                .setContentUrl(Uri.parse("www.google.ro"))
-                .setShareHashtag(new ShareHashtag.Builder()
-                        .setHashtag("#WhiteTiles")
-                        .build())
-                .build();
-
-        shareButton.setShareContent(shareLinkContent);
 
     }
+
 }

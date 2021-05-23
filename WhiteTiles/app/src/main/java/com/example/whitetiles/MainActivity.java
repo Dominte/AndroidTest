@@ -3,6 +3,7 @@ package com.example.whitetiles;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,9 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.share.model.ShareHashtag;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
 
 import org.json.JSONObject;
 
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private String difficulty = "Slow";
     private CallbackManager callbackManager;
     private LoginButton loginButton;
+    private ShareButton shareButton;
 
 
     public void openOptionsActivity(){
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
 
         callbackManager = CallbackManager.Factory.create();
+
+        shareButton = findViewById(R.id.shareButton);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -115,6 +122,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                .setQuote("Test Quote")
+                .setContentUrl(Uri.parse("www.google.ro"))
+                .setShareHashtag(new ShareHashtag.Builder()
+                        .setHashtag("#WhiteTiles")
+                        .build())
+                .build();
+
+        shareButton.setShareContent(shareLinkContent);
 
     }
 
