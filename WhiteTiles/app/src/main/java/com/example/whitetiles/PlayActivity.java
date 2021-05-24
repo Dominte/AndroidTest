@@ -278,19 +278,20 @@ public class PlayActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Game Over!");
         builder.setMessage("Your score is: " + currentScore);
-        saveHighscore(currentScore);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                saveHighscore(currentScore);
                 goBackToMainMenu();
+
             }
         });
 
-
-        builder.setNeutralButton("Share", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Don't Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                return;
+                goBackToMainMenu();
             }
         });
 
