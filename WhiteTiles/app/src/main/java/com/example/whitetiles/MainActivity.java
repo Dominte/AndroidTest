@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
-                .setQuote("Test Quote")
-                .setContentUrl(Uri.parse("www.google.ro"))
+                .setQuote("My favourite game!")
+                .setContentUrl(Uri.parse("www.whitetiles.ro"))
                 .setShareHashtag(new ShareHashtag.Builder()
                         .setHashtag("#WhiteTiles")
                         .build())

@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/highscore_title"
         android:layout_width="194dp"
         android:layout_height="22dp"
@@ -19,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/firstHS"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
@@ -30,6 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/highscore_title" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/secondHS"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
@@ -41,6 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/firstHS" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/thirdHS"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
@@ -52,6 +56,7 @@
         app:layout_constraintTop_toBottomOf="@+id/secondHS" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/fourthHS"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
@@ -63,6 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/thirdHS" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/fifthHS"
         android:layout_width="179dp"
         android:layout_height="wrap_content"
